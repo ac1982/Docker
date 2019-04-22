@@ -26,6 +26,6 @@ RUN addgroup -g ${PGID} laradock \
     && echo "openssl.cafile=/etc/cacert.pem" > /usr/local/etc/php/conf.d/docker-php-openssl-cafile.ini \
     && docker-php-ext-install opcache pdo_mysql \
     && pecl install redis \
-    && docker-php-ext-enable opcache pdo_mysql redis mysql_xdevapi \
+    && docker-php-ext-enable opcache redis mysql_xdevapi \
     && apk del curl openssl tar xz-libs xz build-base autoconf protobuf-dev boost-dev \
     && rm -rf /usr/src /tmp/pear ~/.pearrc /usr/src/temp

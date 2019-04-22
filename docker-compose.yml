@@ -16,8 +16,7 @@ volumes:
 services:
 ### PHP-Worker ###########################################
     php-worker:
-      build:
-        context: ./php-worker
+      image: alexever/php-worker
       container_name: php-worker
       volumes:
         - ./php-worker/logs:/var/logs
@@ -29,8 +28,7 @@ services:
 
 ### PHP-FPM ##############################################
     php-fpm:
-      build:
-        context: ./php-fpm
+      image: alexever/php-fpm
       container_name: php-fpm
       volumes:
         - ./php/php.ini:/usr/local/etc/php/php.ini
