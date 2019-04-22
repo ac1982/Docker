@@ -14,13 +14,23 @@ volumes:
     driver: local
 
 services:
+### PHP-WorkSpace ###########################################
+    php-workspace:
+      image: alexever/php
+      container_name: php-workspace
+      volumes:
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      command: ["crond","-c","/etc/crontabs","-f"]
+      networks:
+        - backend
+
 ### PHP-Worker ###########################################
     php-worker:
       image: alexever/php-worker
       container_name: php-worker
       volumes:
         - ./php-worker/logs:/var/logs
-        - ./php-worker/supervisord.conf:/etc/supervisord.d
+        - ./php-worker/conf.d:/etc/supervisord.d
         - ./php/php.ini:/usr/local/etc/php/php.ini
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
       networks:
@@ -32,7 +42,7 @@ services:
       container_name: php-fpm
       volumes:
         - ./php/php.ini:/usr/local/etc/php/php.ini
-        - ${APP_CODE_PATH_HOST}:/var/www/html
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
       expose:
         - "9000"
       networks:
