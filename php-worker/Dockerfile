@@ -30,7 +30,7 @@ RUN addgroup -g ${PGID} laradock \
     && docker-php-ext-install opcache pdo_mysql pcntl \
     && pecl install redis \
     && docker-php-ext-enable opcache pdo_mysql pcntl redis mysql_xdevapi \
-    && apk del python3-dev py-pip build-base autoconf curl protobuf-dev boost-dev \
+    && apk del curl openssl tar xz-libs xz python3-dev py-pip build-base autoconf curl protobuf-dev boost-dev \
     && rm -rf /usr/src /tmp/pear ~/.pearrc /usr/src/temp
 
 CMD ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
