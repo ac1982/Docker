@@ -1,0 +1,115 @@
+version: '3.7'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+volumes:
+  mysql:
+    driver: local
+  redis:
+    driver: local
+  mongo:
+    driver: local
+
+services:
+### PHP-Worker ###########################################
+    php-worker:
+      build:
+        context: ./php-worker
+      container_name: php-worker
+      volumes:
+        - ./php-worker/logs:/var/logs
+        - ./php-worker/supervisord.conf:/etc/supervisord.d
+        - ./php/php.ini:/usr/local/etc/php/php.ini
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      networks:
+        - backend
+
+### PHP-FPM ##############################################
+    php-fpm:
+      build:
+        context: ./php-fpm
+      container_name: php-fpm
+      volumes:
+        - ./php/php.ini:/usr/local/etc/php/php.ini
+        - ${APP_CODE_PATH_HOST}:/var/www/html
+      expose:
+        - "9000"
+      networks:
+        - backend
+
+### NGINX Server #########################################
+    nginx:
+      image: alexever/nginx
+      container_name: nginx
+      volumes:
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+        - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+        - ${NGINX_SITES_PATH}:/etc/nginx/conf.d
+        - ${NGINX_SSL_PATH}:/etc/nginx/ssl
+      ports:
+        - "80:80"
+        - "443:443"
+      depends_on:
+        - php-fpm
+      networks:
+        - frontend
+        - backend
+
+### MySQL ################################################
+    mysql:
+      image: mysql:latest
+      container_name: mysql
+      environment:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - TZ=Asia/Shanghai
+      restart: always
+      volumes:
+        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+      expose:
+        - "3306"
+      networks:
+        - backend
+
+### MongoDB ################################################
+    mongo:
+      image: mongo
+      container_name: mongo
+      expose:
+        - "27017"
+      volumes:
+        - ${DATA_PATH_HOST}/mongo:/data/db
+      networks:
+        - backend
+
+### Redis ################################################
+    redis:
+      image: redis:5-alpine
+      container_name: redis
+      restart: always
+      volumes:
+        - ${DATA_PATH_HOST}/redis:/data
+      expose:
+        - "6379"
+      command: ["redis-server", "--appendonly", "yes"]
+      networks:
+        - backend
+
+### Shadowsocks ##########################################
+    shadowsocks:
+      image: shadowsocks/shadowsocks-libev
+      container_name: shadowsocks
+      restart: always
+      volumes:
+        - ./shadowsocks/config.json:/etc/shadowsocks/config.json
+      ports:
+        - "8388:8388"
+      command: ["ss-local","-c","/etc/shadowsocks/config.json"]
+      networks:
+        - frontend
+        - backend

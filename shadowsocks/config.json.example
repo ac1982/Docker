@@ -1,0 +1,13 @@
+{
+    "server": "you-server-host",
+    "server_port": "your-server-port",
+    "local_port":8388,
+    "local_address": "0.0.0.0",
+    "password": "your-password",
+    "method": "chacha20-ietf-poly1305",
+    "plugin": "",
+    "plugin_opts": "",
+    "plugin_args": "",
+    "remarks": "MyProxy",
+    "timeout": 300
+}
