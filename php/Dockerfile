@@ -32,5 +32,5 @@ RUN addgroup -g ${PGID} laradock \
     && mv composer.phar /usr/local/bin/composer \
     && php -r "unlink('composer-setup.php');" \
     && rm -rf /usr/src /tmp/pear ~/.pearrc /usr/src/temp \
-    && echo "* * * * * /usr/bin/php /var/www/artisan schedule:run >> /var/www/storage/logs/crontabs.log" > /etc/crontabs/schedule \
+    && echo "* * * * * /usr/local/bin/php /var/www/artisan schedule:run >> /var/www/storage/logs/crontabs.log" > /etc/crontabs/schedule \
     && chmod -R 644 /etc/crontabs
