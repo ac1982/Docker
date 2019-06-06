@@ -1,7 +1,7 @@
 FROM php:7.3-cli
 ENV MYSQL_XDEVAPI_VER 8.0.16
 
-RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 tar libprotobuf-dev libboost-dev openssl protobuf-compiler \
+RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 tar libprotobuf-dev libboost-dev openssl protobuf-compiler cron\
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-basic_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-basic_19.3.0.0.0-2_amd64.deb \
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-sqlplus_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-sqlplus_19.3.0.0.0-2_amd64.deb \
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-devel_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-devel_19.3.0.0.0-2_amd64.deb \
@@ -32,5 +32,5 @@ RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 ta
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf ~/* \
     && rm -rf /usr/src/temp/* \
-    && echo "* * * * * /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1" >> /etc/crontabs/root \
-    && chmod -R 644 /etc/crontabs
+    && echo "* * * * * root /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1" >> /etc/cron.d/schedule \
+    && chmod -R 644 /etc/cron.d

@@ -3,7 +3,7 @@ FROM php:7.3-alpine
 LABEL maintainer="Alex Chiang"
 
 ENV SUPERVISOR_VER 4.0.2
-ENV MYSQL_XDEVAPI_VER 8.0.15
+ENV MYSQL_XDEVAPI_VER 8.0.16
 
 # Add a non-root user:
 ARG PUID=1000
