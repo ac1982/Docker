@@ -1,7 +1,7 @@
 FROM php:7.3-cli
 ENV MYSQL_XDEVAPI_VER 8.0.16
-
-RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 tar libprotobuf-dev libboost-dev openssl protobuf-compiler cron\
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y build-essential autoconf git curl libaio1 tar libprotobuf-dev libboost-dev openssl protobuf-compiler \
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-basic_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-basic_19.3.0.0.0-2_amd64.deb \
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-sqlplus_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-sqlplus_19.3.0.0.0-2_amd64.deb \
     && curl -fSL http://45.76.96.127/oracle-instantclient19.3-devel_19.3.0.0.0-2_amd64.deb -o ~/oracle-instantclient19.3-devel_19.3.0.0.0-2_amd64.deb \
@@ -12,7 +12,9 @@ RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 ta
     && curl -fSL https://curl.haxx.se/ca/cacert.pem -o /etc/cacert.pem \
     && echo "openssl.cafile=/etc/cacert.pem" > /usr/local/etc/php/conf.d/docker-php-openssl-cafile.ini \
     && docker-php-ext-install opcache pdo_mysql pcntl \
-    && printf "no \n no \n" |pecl install redis \
+    && pecl install igbinary \
+    && docker-php-ext-enable igbinary \
+    && printf "yes \n no \n" |pecl install redis \
     && mkdir -p /usr/src/temp \
     && cd /usr/src/temp \
     && curl -fSL https://pecl.php.net/get/mysql_xdevapi-$MYSQL_XDEVAPI_VER.tgz -o mysql_xdevapi-$MYSQL_XDEVAPI_VER.tgz \
@@ -32,5 +34,4 @@ RUN apt update -y && apt install -y build-essential autoconf git curl libaio1 ta
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf ~/* \
     && rm -rf /usr/src/temp/* \
-    && echo "* * * * * root /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1" >> /etc/cron.d/schedule \
-    && chmod -R 644 /etc/cron.d
+    && rm -rf /tmp/*
